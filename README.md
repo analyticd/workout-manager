@@ -30,3 +30,8 @@ After each super set there must be an `\n`
 
 ### Record your sessions
 Creates a log file with the day and hour, routine name, and duration
+
+```
+2017-04-10 07:04:17	routines/routine.wo	  3794.34602499
+2017-04-13 06:45:50	routines/routine2.wo	4374.43710089
+```
