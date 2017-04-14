@@ -152,8 +152,9 @@ class woToObject(object):
         if (self.count == (self.numberofsets + 1) ):
             self.count = 0
             self.destroy_frame()
-            self.repInstance( True )
             self.updateSuperset()
+            self.repInstance( True )
+            
    
     def updateLabels(self):
             for j in range(self.numberofexcercises):
