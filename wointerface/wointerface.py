@@ -89,14 +89,7 @@ class woToObject(object):
         self.frame = tk.Frame(self.master) # new frame
         self.frame.grid()
 
-            # sets of this superset
-        sets =  re.split("\n\* ",self.superset[ self.ssetcount - 1 ])
-        ssrep = re.findall("[0-9:]+", sets[0] ) # superset rep
-            #  [ rep , break] , check this part, later ;)
-        rset = [ re.split("\n",x) for x in sets[1:] ]# set reps
-            #  [ ex , rep, break ]
-
-        numberofsets = int(ssrep[0])
+        self.updateSuperset();
         
         tk.Label(self.frame , 
                 text = " ----------------------------- \n S U P E R S E T   " + 
@@ -104,28 +97,25 @@ class woToObject(object):
                         " \n ----------------------------- ",
                 font=('Helvetica',15,"bold")
                 ).grid(
-                    row=0, column=0, columnspan=numberofsets  
+                    row=0, column=0, columnspan=self.numberofsets  
                     )
 
-        ssbreakLabel = Countdown(ssrep[1], self.frame)
-#         ssbreakLabel = Countdown("00:02", self.frame)
+#         ssbreakLabel = Countdown(self.ssrep[1], self.frame)
+        ssbreakLabel = Countdown("00:02", self.frame)
             # possible bug, when ssrep[0] = 0
         ssbreakLabel.label.grid(
-                    row=1, column=1, columnspan=numberofsets-1) 
+                    row=1, column=1, columnspan=self.numberofsets-1) 
 
-             # rset = [  [ ex , rep, break ]...]
-        numberofexcercises = len(rset)        
-        
-        butStart = tk.Button(self.frame, text="Set Break", font=("fixedsys",10,"bold"), 
+        butStart = tk.Button(self.frame, text="Start Break", font=("fixedsys",10,"bold"), 
                     command = lambda:sequence( 
                         ssbreakLabel.start(), 
-                        self.incrementCounter( numberofsets+1 ),
-                        self.updateLabels(numberofexcercises, numberofsets, rset)
+                        self.incrementCounter(),
+                        self.updateLabels()
                         )  
                     )   
         butStart.grid(row=1, column=0)
 
-        self.updateLabels(numberofexcercises, numberofsets, rset)
+        self.updateLabels()
 
         butDone = tk.Button(self.frame, text="Superset Done", font=("fixedsys",10,"bold"),
                 borderwidth=5,
@@ -135,30 +125,44 @@ class woToObject(object):
                     )
                 )
 
-        butDone.grid(row=numberofexcercises+2, column=0)
+        butDone.grid(row=self.numberofexcercises+2, column=0)
 
+    def updateSuperset(self):
+            # sets of this superset
+        sets =  re.split("\n\* ",self.superset[ self.ssetcount - 1 ])
+        self.ssrep = re.findall("[0-9:]+", sets[0] ) # superset rep
+            #  [ rep , break] , check this part, later ;)
+        self.rset = [ re.split("\n",x) for x in sets[1:] ]# set reps
+            #  [ ex , rep, break ]
+
+        self.numberofsets = int(self.ssrep[0]) 
+            # rset = [  [ ex , rep, break ]...]
+        self.numberofexcercises = len(self.rset)        
+           
 
     def destroy_frame(self):
-        if (self.ssetcount  == len( self.superset) ):
+        if (self.ssetcount  >= len( self.superset) ):
             self.frame.quit()
         else:
             self.frame.destroy()
             self.count = 0
 
-    def incrementCounter(self, limit):
+    def incrementCounter(self):
         self.count+=1
-        if (self.count == limit):
+        if (self.count == (self.numberofsets + 1) ):
             self.count = 0
             self.destroy_frame()
+            self.updateSuperset()
             self.repInstance( True )
+            
    
-    def updateLabels(self, numberofexcercises, numberofsets, rset):
-            for j in range(numberofexcercises):
-                excercise = rset[j]
+    def updateLabels(self):
+            for j in range(self.numberofexcercises):
+                excercise = self.rset[j]
                 tk.Label(self.frame, text = excercise[0],font=("fixedsys",15)).grid(
                             row = 2+j, column=0)
      
-                for k in range(numberofsets):
+                for k in range(self.numberofsets):
                     if k == self.count:
                         bg = "red"
                     else:
